@@ -14,3 +14,14 @@ sudo apt install python3-pymodbus python3-serial
 git clone https://github.com
 cd Wireless-KSEM-Inverter-Connection
 python3 modbus_gateway.py
+```
+
+
+## Known Issues
+- The script needs the pymodbus lib V3.8.6, which you'll get with Raspbian Trixie.
+
+  You can check the version with
+
+```bash
+  sudo apt show python3-pymodbus
+```
