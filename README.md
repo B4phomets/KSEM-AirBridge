@@ -1,5 +1,3 @@
-markdown
-
 # Wireless KSEM Inverter Connection (KSEM-AirBridge)
 
 A robust Modbus TCP-to-RTU Gateway designed to connect the **Kostal Smart Energy Meter (KSEM) G2** over Ethernet to a **Kostal Plenticore G2** Inverter via RS485.
