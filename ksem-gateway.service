@@ -1,14 +1,15 @@
 [Unit]
-Description=KSEM Modbus Gateway
-After=network.target
+Description=KSEM Modbus TCP to RTU AirBridge Gateway
+After=network-online.target
+Wants=network-online.target
 
 [Service]
-ExecStart=/usr/bin/python3 ~/KSEM-AirBridge/modbusGateway.python3
-WorkingDirectory=~/KSEM-AirBridge/
+ExecStart=/usr/bin/python3 /home/EVCC_Admin/KSEM-AirBridge/modbusGateway.py
 StandardOutput=inherit
 StandardError=inherit
 Restart=always
-User=pi
+RestartSec=10
+User=EVCC_Admin
 
 [Install]
 WantedBy=multi-user.target
