@@ -4,13 +4,13 @@ markdown
 
 A robust Modbus TCP-to-RTU Gateway designed to connect the **Kostal Smart Energy Meter (KSEM) G2** over Ethernet to a **Kostal Plenticore G2** Inverter via RS485.
 
+For deeper insights into the architectural design and performance decisions (TCP Push vs. Polling), please refer to the **Technical Architecture & Experimental Insights** section at the end.
+
 ## Features
 - **Hybrid Data Sync:** Efficiently fetches 148+ registers using active polling and passive TCP listening.
 - **Decoupled Timing:** Independent execution of network polling and serial serving to ensure minimal latency.
 - **Industrial Standards:** Pre-configured for 38400 Baud, 8N2 (standard for Kostal RTU communication).
 - **Thread-Safe:** Shared memory architecture for reliable data handling between interfaces.
-
-For futher development decisions, please have a
 
 ---
 
