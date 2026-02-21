@@ -1,0 +1,14 @@
+[Unit]
+Description=KSEM Modbus Gateway
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/python3 ~/KSEM-AirBridge/modbusGateway.python3
+WorkingDirectory=~/KSEM-AirBridge/
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+User=pi
+
+[Install]
+WantedBy=multi-user.target
