@@ -14,3 +14,5 @@ sudo apt install python3-pymodbus python3-serial
 git clone https://github.com
 cd Wireless-KSEM-Inverter-Connection
 python3 modbus_gateway.py
+
+mv /etc/systemd/system/
