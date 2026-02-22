@@ -9,6 +9,7 @@ from pymodbus.client import ModbusTcpClient
 from pymodbus.server import (StartSerialServer,StartTcpServer)
 from pymodbus import (FramerType,ModbusException,pymodbus_apply_logging_config)
 from pymodbus.datastore import ModbusSequentialDataBlock, ModbusSlaveContext, ModbusServerContext
+from pymodbus.pdu import ExceptionResponse
 
 # Debugging threads requre debugpy lib
 try:
@@ -25,6 +26,9 @@ DEBUG_MSG = False
 # --- CONFIGURATION ---
 # =================================================================
 
+# Fixed timeout for stale data
+DATA_STALE_TIMEOUT    = 1.0 
+
 # TCP Server Settings (Receiving pushed data from the KSEM master)
 TCP_LISTENING_IP     = "192.168.178.150"
 TCP_LISTENING_PORT   = 5020
@@ -33,7 +37,7 @@ TCP_LISTENING_PORT   = 5020
 TCP_POLLING_IP       = "192.168.178.100"
 TCP_POLLING_PORT     = 502
 TCP_POLLING_TIMEOUT  = 5.0
-TCP_POLLING_INTERVAL = 1
+TCP_POLLING_INTERVAL = 2
 
 # RTU Settings (Serving data to the Inverter via RS485)
 SERIAL_PORT     = "/dev/ttyACM0"
@@ -78,6 +82,7 @@ class SharedDataBlock(ModbusSequentialDataBlock):
         # Thread-safe data block for sharing registers between TCP and RTU interfaces
         super().__init__(address, values)
         self.data_lock = threading.Lock()
+        self.timestamp = 0.0
 
     @classmethod
     def create(cls):
@@ -86,6 +91,13 @@ class SharedDataBlock(ModbusSequentialDataBlock):
     def getValues(self, address, count=1):
         # Safe read access for the RTU server with offset logging
         with self.data_lock:
+            # Check if the important push data is stale
+            if (time.time() - self.timestamp) > DATA_STALE_TIMEOUT:
+                # Data is too old. Return Slave Device Failure (0x04)
+                # This informs the RS485 Master that communication is broken
+                print(f"[Warning] Push data stale! Last seen: {round(time.time() - self.timestamp, 2)}s ago")
+                return ExceptionResponse.SLAVE_FAILURE
+            
             # Use base class logic for data retrieval and error checking
             values = super().getValues(address, count)
             
@@ -100,6 +112,7 @@ class SharedDataBlock(ModbusSequentialDataBlock):
         with self.data_lock:
             # Update the underlying data store
             super().setValues(address, values)
+            self.timestamp = time.time()
 
         debug_message(f"--> [TCP INPUT] Inverter writes Adr: {address-1}, Data: {values}")
 
